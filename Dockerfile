@@ -59,7 +59,7 @@ COPY --from=builder /out/photo_collation /usr/local/bin/photo_collation
 # 元数据
 LABEL org.opencontainers.image.title="photo_collation" \
       org.opencontainers.image.description="EXIF-based photo organizer (CLI)" \
-      org.opencontainers.image.source="https://github.com/yourname/photo_collation" \
+      org.opencontainers.image.source="https://github.com/fy1967/photo_collation" \
       org.opencontainers.image.licenses="MIT"
 
 # 用 ENTRYPOINT + CMD 模式：ENTRYPOINT 是固定的 photo_collation，CMD 是默认参数

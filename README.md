@@ -286,7 +286,7 @@ docker run --rm photo_collation:cli -version
 docker buildx create --use
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t yourname/photo_collation:v1.0.0 \
+  -t fy1967/photo_collation:v1.0.0 \
   --push .
 ```
 
