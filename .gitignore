@@ -1,0 +1,38 @@
+# ===== 用户数据（项目目录下你跑程序产生的照片，9GB）=====
+# 这些是源照片 / 已归类结果 / Noexif 输出，绝对不能进 git
+p1/
+p2018/
+p2020/
+P-C/
+Noexif/
+
+# ===== 构建产物 =====
+*.exe
+photo_collation
+photo_collation-*
+gui
+dist/
+
+# ===== Go 测试 / 覆盖率 =====
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# ===== 编辑器临时 =====
+*~
+*.bak
+
+# ===== 日志 =====
+*.log
+
+# ===== 临时文件 =====
+tmp/
+.tmp/

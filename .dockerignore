@@ -1,0 +1,37 @@
+# ===== 版本控制 =====
+.git/
+.gitignore
+.gitattributes
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ===== 构建产物 =====
+dist/
+*.exe
+photo_collation
+photo_collation-gui
+gui
+
+# ===== 用户数据（绝对不能打进镜像）=====
+# 这些是你的实际照片 / 测试数据
+Noexif/
+p1/
+p2018/
+p2020/
+P-C/
+
+# ===== 大目录（避免无用 context） =====
+*.log
+.DS_Store
+
+# ===== 本项目不需要打进镜像的源码 =====
+# GUI 体积大、依赖 CGO，CLI 镜像用不到
+cmd/gui/
+
+# ===== 测试辅助 =====
+testdata/
+**/testdata/

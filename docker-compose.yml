@@ -1,0 +1,35 @@
+# docker-compose.yml — 容器化运行 photo_collation CLI
+#
+# 常用命令：
+#   docker compose build              # 构建镜像
+#   docker compose run --rm collation # 跑一次（容器跑完即删）
+#   docker compose run --rm collation -src /photos -dst /sorted -v
+#   docker compose down               # 清理
+#
+# 注意：mount 的源目录是宿主机路径，按需修改为你的实际目录
+
+services:
+  collation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: dev
+        COMMIT: local
+        BUILT_AT: local
+    image: photo_collation:cli
+    container_name: photo_collation
+
+    # 关键：以 nonroot 用户运行（distroless 镜像默认就是）
+    user: "65532:65532"
+
+    # 挂载数据卷
+    volumes:
+      # 源照片目录：只读挂载避免误写
+      - ./photos:/photos:ro
+      # 归类输出：读写
+      - ./sorted:/sorted
+
+    # 默认命令：显示帮助
+    # 用 docker compose run --rm collation -src /photos -dst /sorted 覆盖
+    command: ["-h"]
