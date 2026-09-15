@@ -89,6 +89,27 @@ docker run --rm \
 
 详见下方 [Docker](#docker-容器化) 章节。
 
+### 方式四：macOS `.app`（GUI 用户推荐）
+
+从 [Releases](../../releases) 下载对应架构的 zip：
+
+| 你的 Mac | 文件 |
+|---|---|
+| Apple Silicon (M1/M2/M3/M4) | `PhotoCollation-macos-arm64.zip` |
+| Intel | `PhotoCollation-macos-amd64.zip` |
+
+**首次启动**（未签名应用，Gatekeeper 会拦截）：
+
+1. 双击 zip 解压
+2. **右键** `Photo Collation.app` → 选择「打开」
+3. 弹出警告点「打开」即可，之后双击正常
+
+或者用命令行去隔离属性：
+
+```bash
+xattr -d com.apple.quarantine "/Applications/Photo Collation.app"
+```
+
 ## CLI 用法
 
 ```bash
