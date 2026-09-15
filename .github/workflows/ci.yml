@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }} / Go ${{ matrix.go-version }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: ['1.22', '1.23', '1.24']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Verify modules
+        run: go mod download
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go build (CLI)
+        run: go build -o photo_collation .
+
+      - name: go build (GUI)
+        run: go build -o photo_collation-gui ./cmd/gui
+
+      - name: go test
+        run: go test -race -v ./...
+
+  release-cli:
+    name: Build release binaries
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+
+      - name: Build CLI matrix
+        run: |
+          set -e
+          mkdir -p dist
+          declare -A targets=(
+            [photo_collation-linux-amd64]="linux amd64"
+            [photo_collation-linux-arm64]="linux arm64"
+            [photo_collation-darwin-amd64]="darwin amd64"
+            [photo_collation-darwin-arm64]="darwin arm64"
+            [photo_collation-windows-amd64.exe]="windows amd64"
+          )
+          for bin in "${!targets[@]}"; do
+            IFS=' ' read -r goos goarch <<< "${targets[$bin]}"
+            echo "==> Building $bin ($goos/$goarch)"
+            GOOS=$goos GOARCH=$goarch \
+              go build -trimpath -ldflags="-s -w" -o "dist/$bin" .
+          done
+          ls -la dist/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-binaries
+          path: dist/
+          if-no-files-found: error

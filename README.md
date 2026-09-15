@@ -1,5 +1,11 @@
 # Photo Collation
 
+[![Go Version](https://img.shields.io/badge/Go-1.22%2B-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/fy1967/photo_collation/ci.yml?branch=main&logo=github)](https://github.com/fy1967/photo_collation/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/fy1967/photo_collation?logo=github)](https://github.com/fy1967/photo_collation/releases/latest)
+[![License](https://img.shields.io/github/license/fy1967/photo_collation)](./LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fy1967/photo_collation)](https://goreportcard.com/report/github.com/fy1967/photo_collation)
+
 按 EXIF 拍摄时间自动归类 JPEG 照片。提供 **CLI** 与 **Fyne GUI** 两种使用方式。
 
 ```
