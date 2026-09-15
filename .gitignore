@@ -13,6 +13,13 @@ photo_collation-*
 /gui          # 根目录下的 GUI 二进制（之前 go build ./cmd/gui 的默认输出），不要匹配 cmd/gui/
 dist/
 
+# macOS .app bundle（fyne package 产物，应通过 release 分发，不进 git）
+*.app/
+/PhotoCollation.app
+/PhotoCollation.app.arm64
+/Photo\ Collation-arm64.app
+/Photo\ Collation-amd64.app
+
 # ===== Go 测试 / 覆盖率 =====
 *.test
 *.out
