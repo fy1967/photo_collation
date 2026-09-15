@@ -10,7 +10,7 @@ Noexif/
 *.exe
 photo_collation
 photo_collation-*
-gui
+/gui          # 根目录下的 GUI 二进制（之前 go build ./cmd/gui 的默认输出），不要匹配 cmd/gui/
 dist/
 
 # ===== Go 测试 / 覆盖率 =====
