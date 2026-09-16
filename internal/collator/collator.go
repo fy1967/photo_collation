@@ -241,7 +241,11 @@ func (c *Collator) processFile(path string) {
 	switch {
 	case err == nil:
 		targetDir = yearMonthDir(c.opts.Dst, t)
-	case errors.Is(err, exif.ErrNoExif), errors.Is(err, exif.ErrInvalidTime):
+	case errors.Is(err, exif.ErrNoExif),
+		errors.Is(err, exif.ErrInvalidTime),
+		errors.Is(err, exif.ErrCorrupted):
+		// ErrCorrupted（EXIF 损坏）也归 Noexif，保证文件不被丢弃。
+		// 用户后续可手动修复或用其他工具归类。
 		targetDir = filepath.Join(c.opts.Dst, NoexifDir)
 		isNoExif = true
 	default:

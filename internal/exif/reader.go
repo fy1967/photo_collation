@@ -25,6 +25,11 @@ var (
 
 	// ErrInvalidTime EXIF 存在但拍摄时间字段缺失或格式异常。
 	ErrInvalidTime = errors.New("exif: invalid DateTime field")
+
+	// ErrCorrupted EXIF 结构损坏（goexif 解码时报错）。
+	// 通常是相机写入时的 bug、文件传输损坏、或不完整的 EXIF segment。
+	// 当前 collator 把这种错误归到 Noexif（"无法按拍摄时间归类"）。
+	ErrCorrupted = errors.New("exif: file is corrupted")
 )
 
 // Reader 读取 JPEG EXIF 中的拍摄时间。
@@ -52,9 +57,12 @@ func (r *Reader) ReadTime(path string) (t time.Time, isOriginal bool, err error)
 
 	x, err := goexif.Decode(f)
 	if err != nil {
-		// goexif 不暴露 ErrNoExif 哨兵错误，靠错误字符串识别"无 EXIF marker"。
+		// goexif 不暴露 ErrNoExif 哨兵错误，靠错误字符串识别。
 		if isNoExifErr(err) {
 			return time.Time{}, false, ErrNoExif
+		}
+		if isCorruptedExifErr(err) {
+			return time.Time{}, false, ErrCorrupted
 		}
 		return time.Time{}, false, fmt.Errorf("decode exif: %w", err)
 	}
@@ -100,6 +108,26 @@ func isNoExifErr(err error) bool {
 	return strings.Contains(msg, "failed to find exif intro marker") ||
 		strings.Contains(msg, "no exif data") ||
 		strings.Contains(msg, "EOF")
+}
+
+// isCorruptedExifErr 判断 goexif.Decode 返回的错误是否表示"EXIF 损坏"。
+//
+// 典型错误（无论 wrap 多深都识别）：
+//   - "zero length tag value"        : sub-IFD 里有零长度 tag
+//   - "short read of tag value"      : tag value 数据读不够
+//   - "loading EXIF sub-IFD ... failed" : sub-IFD 解析失败
+//   - "sub-IFD ... decode failed"    : 各种 sub-IFD 解码问题
+//   - "exif: decode failed"          : tiff 包解码错误的 wrapper
+func isCorruptedExifErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "zero length tag value") ||
+		strings.Contains(msg, "short read of tag value") ||
+		strings.Contains(msg, "sub-IFD") ||
+		strings.Contains(msg, "loading EXIF") ||
+		strings.Contains(msg, "exif: decode failed")
 }
 
 // parseTagTime 把 EXIF tag 里的字符串值按 "2006:01:02 15:04:05" 解析为 time.Time。
